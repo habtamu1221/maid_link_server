@@ -14,7 +14,19 @@ type LoginSuccess struct {
 	Token string `json:"token"`
 }
 
+type PasswordChangeSuccess struct {
+	NewPassword string `json:"new_password"`
+}
+
 type LoginInput struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type ShortError struct {
+	Err string `json:"err"`
+}
+
+type ShortSuccess struct {
+	Msg string `json:"msg"`
 }

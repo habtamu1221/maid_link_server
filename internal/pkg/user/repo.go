@@ -7,5 +7,11 @@ import (
 )
 
 type IUserRepo interface {
-	GetUser(context context.Context) (*model.User, error)
+	GetUserByEmail(context context.Context) (*model.User, error)
+	GetUserByID(context context.Context) (*model.User, error)
+	UpdateUser(context.Context) (*model.User, error)
+	ChangePassword(context context.Context) (*model.User, error)
+	ChangeImageUrl(context.Context) error
+	GetImageUrl(context.Context) (string, error)
+	// DeleteProfilePicture(context.Context) error
 }

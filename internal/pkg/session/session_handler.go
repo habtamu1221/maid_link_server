@@ -57,12 +57,9 @@ func (sess *SessionHandler) GetSession(request *http.Request) *model.Session {
 	}
 	session := &model.Session{}
 	tkn, err := jwt.ParseWithClaims(token, session, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
+		return []byte(jwtKey), nil
 	})
 	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			return nil
-		}
 		return nil
 	}
 	if !tkn.Valid {

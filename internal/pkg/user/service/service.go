@@ -17,11 +17,54 @@ func NewUserService(repo user.IUserRepo) user.IUserService {
 	}
 }
 
-func (userser *UserService) GetUser(context context.Context) *model.User {
-	user, er := userser.Repo.GetUser(context)
+func (userser *UserService) GetUserByEmail(context context.Context) *model.User {
+	user, er := userser.Repo.GetUserByEmail(context)
 	if er != nil {
 		return nil
 	}
-	user.Password = ""
 	return user
+}
+
+func (userser *UserService) GetUserByID(context context.Context) *model.User {
+	user, err := userser.Repo.GetUserByID(context)
+	if err != nil {
+		return nil
+	}
+	return user
+}
+
+func (userser *UserService) UpdateUser(context context.Context) *model.User {
+	if model, er := userser.Repo.UpdateUser(context); er != nil {
+		return nil //
+	} else {
+		return model
+	}
+}
+
+func (userser *UserService) ChangePassword(context context.Context) *model.User {
+	if model, er := userser.Repo.UpdateUser(context); er != nil {
+		return nil //
+	} else {
+		return model
+	}
+}
+
+func (userser *UserService) ChangeImageUrl(context context.Context) bool {
+	er := userser.Repo.ChangeImageUrl(context)
+	return er == nil
+}
+
+func (userser *UserService) GetImageUrl(context context.Context) string {
+	image, er := userser.Repo.GetImageUrl(context)
+	if er != nil {
+		return ""
+	}
+	return image
+}
+
+func (userser *UserService) DeleteProfilePicture(contex context.Context) bool {
+	ctx := context.WithValue(contex, "image_url", "")                                        // user_id
+	ctx = context.WithValue(ctx, "user_id", contex.Value("session").(*model.Session).UserID) //
+	era := userser.Repo.ChangeImageUrl(ctx)
+	return era == nil
 }

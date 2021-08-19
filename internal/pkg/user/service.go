@@ -7,5 +7,11 @@ import (
 )
 
 type IUserService interface {
-	GetUser(context context.Context) *model.User
+	GetUserByEmail(context context.Context) *model.User
+	GetUserByID(context context.Context) *model.User
+	UpdateUser(context.Context) *model.User
+	ChangePassword(context context.Context) *model.User
+	ChangeImageUrl(context.Context) bool
+	GetImageUrl(context.Context) string
+	DeleteProfilePicture(context.Context) bool
 }
