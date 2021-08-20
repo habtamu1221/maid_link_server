@@ -1,0 +1,118 @@
+[
+    {
+        "label": "math",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
+        "documentation": {}
+    },
+    {
+        "label": "csv",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "csv",
+        "description": "csv",
+        "detail": "csv",
+        "documentation": {}
+    },
+    {
+        "label": "matplotlib",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "matplotlib",
+        "description": "matplotlib",
+        "detail": "matplotlib",
+        "documentation": {}
+    },
+    {
+        "label": "pyplot",
+        "importPath": "matplotlib",
+        "description": "matplotlib",
+        "isExtraImport": true,
+        "detail": "matplotlib",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "categories",
+        "kind": 5,
+        "importPath": "api.generateChart",
+        "description": "api.generateChart",
+        "peekOfCode": "categories = [\"Before\", \"LoadAfter\",\n              \"LoadAndStoreAfter\", \"NopAfter\", \"StoreAfter\"]\nreleases = [\"memcached-1.4.22\", \"memcached-1.4.30\",\n            \"memcached-1.5.12\", \"memcached-1.5.20\", \"memcached-1.6.9\"]\nthreads = [\"4\", \"8\", \"16\"]\nemits = [\"2\", '4', '8']\nbemits =[ \"Before\"  , \"2\" , '4' , '8' ]\n# workloads = [ \"workloada\" , \"workloadb\" , \"workloadc\" , \"workloadd\" , \"workloade\"  , \"workloadf\"];\nscategories = [\"cycles\", \"branches\",    \"branch-misses\",\n               \"branch-misses-(%)\",   \"branch-loads\",      \"branch-load-misses\", 'L1-icache-load-misses']",
+        "detail": "api.generateChart",
+        "documentation": {}
+    },
+    {
+        "label": "releases",
+        "kind": 5,
+        "importPath": "api.generateChart",
+        "description": "api.generateChart",
+        "peekOfCode": "releases = [\"memcached-1.4.22\", \"memcached-1.4.30\",\n            \"memcached-1.5.12\", \"memcached-1.5.20\", \"memcached-1.6.9\"]\nthreads = [\"4\", \"8\", \"16\"]\nemits = [\"2\", '4', '8']\nbemits =[ \"Before\"  , \"2\" , '4' , '8' ]\n# workloads = [ \"workloada\" , \"workloadb\" , \"workloadc\" , \"workloadd\" , \"workloade\"  , \"workloadf\"];\nscategories = [\"cycles\", \"branches\",    \"branch-misses\",\n               \"branch-misses-(%)\",   \"branch-loads\",      \"branch-load-misses\", 'L1-icache-load-misses']\nfcategories = [\"cycles.csv\", \"branches.csv\", \"branch-misses.csv\", \"branch-misses-per.csv\",\n               \"branch-loads.csv\", \"branch-load-misses.csv\", \"L1-icache-load-misses.csv\"]",
+        "detail": "api.generateChart",
+        "documentation": {}
+    },
+    {
+        "label": "threads",
+        "kind": 5,
+        "importPath": "api.generateChart",
+        "description": "api.generateChart",
+        "peekOfCode": "threads = [\"4\", \"8\", \"16\"]\nemits = [\"2\", '4', '8']\nbemits =[ \"Before\"  , \"2\" , '4' , '8' ]\n# workloads = [ \"workloada\" , \"workloadb\" , \"workloadc\" , \"workloadd\" , \"workloade\"  , \"workloadf\"];\nscategories = [\"cycles\", \"branches\",    \"branch-misses\",\n               \"branch-misses-(%)\",   \"branch-loads\",      \"branch-load-misses\", 'L1-icache-load-misses']\nfcategories = [\"cycles.csv\", \"branches.csv\", \"branch-misses.csv\", \"branch-misses-per.csv\",\n               \"branch-loads.csv\", \"branch-load-misses.csv\", \"L1-icache-load-misses.csv\"]\n# before Data := representing the data in a dictionary on which the dictionary looks like this:\n#  {   'thread 1' : {    \"cycles\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ] , \"branches\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ]    } ,",
+        "detail": "api.generateChart",
+        "documentation": {}
+    },
+    {
+        "label": "emits",
+        "kind": 5,
+        "importPath": "api.generateChart",
+        "description": "api.generateChart",
+        "peekOfCode": "emits = [\"2\", '4', '8']\nbemits =[ \"Before\"  , \"2\" , '4' , '8' ]\n# workloads = [ \"workloada\" , \"workloadb\" , \"workloadc\" , \"workloadd\" , \"workloade\"  , \"workloadf\"];\nscategories = [\"cycles\", \"branches\",    \"branch-misses\",\n               \"branch-misses-(%)\",   \"branch-loads\",      \"branch-load-misses\", 'L1-icache-load-misses']\nfcategories = [\"cycles.csv\", \"branches.csv\", \"branch-misses.csv\", \"branch-misses-per.csv\",\n               \"branch-loads.csv\", \"branch-load-misses.csv\", \"L1-icache-load-misses.csv\"]\n# before Data := representing the data in a dictionary on which the dictionary looks like this:\n#  {   'thread 1' : {    \"cycles\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ] , \"branches\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ]    } ,\n#       'thread 2' : {   \"branches\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ]    } ,",
+        "detail": "api.generateChart",
+        "documentation": {}
+    },
+    {
+        "label": "scategories",
+        "kind": 5,
+        "importPath": "api.generateChart",
+        "description": "api.generateChart",
+        "peekOfCode": "scategories = [\"cycles\", \"branches\",    \"branch-misses\",\n               \"branch-misses-(%)\",   \"branch-loads\",      \"branch-load-misses\", 'L1-icache-load-misses']\nfcategories = [\"cycles.csv\", \"branches.csv\", \"branch-misses.csv\", \"branch-misses-per.csv\",\n               \"branch-loads.csv\", \"branch-load-misses.csv\", \"L1-icache-load-misses.csv\"]\n# before Data := representing the data in a dictionary on which the dictionary looks like this:\n#  {   'thread 1' : {    \"cycles\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ] , \"branches\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ]    } ,\n#       'thread 2' : {   \"branches\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ]    } ,\n#       'thread 3' : {   \"branch-misses\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ]    } ,\n#       .\n#       .",
+        "detail": "api.generateChart",
+        "documentation": {}
+    },
+    {
+        "label": "fcategories",
+        "kind": 5,
+        "importPath": "api.generateChart",
+        "description": "api.generateChart",
+        "peekOfCode": "fcategories = [\"cycles.csv\", \"branches.csv\", \"branch-misses.csv\", \"branch-misses-per.csv\",\n               \"branch-loads.csv\", \"branch-load-misses.csv\", \"L1-icache-load-misses.csv\"]\n# before Data := representing the data in a dictionary on which the dictionary looks like this:\n#  {   'thread 1' : {    \"cycles\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ] , \"branches\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ]    } ,\n#       'thread 2' : {   \"branches\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ]    } ,\n#       'thread 3' : {   \"branch-misses\" : [  \"Release 1\" ,\"Release 2\" ,\"Release 3\" ,\"Release 4\" ,   ]    } ,\n#       .\n#       .\n#       .\n# }",
+        "detail": "api.generateChart",
+        "documentation": {}
+    },
+    {
+        "label": "beforeData",
+        "kind": 5,
+        "importPath": "api.generateChart",
+        "description": "api.generateChart",
+        "peekOfCode": "beforeData = dict()\nbeforeData[\"4\"]= dict()\nbeforeData[\"8\"]= dict()\nbeforeData[\"16\"]= dict()\nx_index= np.arange(len( releases ))\nwidth=0.21\nfor category in categories:\n    categoryDir = category+\"/\"\n    for thread in threads:\n        index = 0",
+        "detail": "api.generateChart",
+        "documentation": {}
+    }
+]

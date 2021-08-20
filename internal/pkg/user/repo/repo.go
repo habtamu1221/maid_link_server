@@ -6,6 +6,7 @@ import (
 
 	"github.com/samuael/Project/MaidLink/internal/pkg/model"
 	"github.com/samuael/Project/MaidLink/internal/pkg/user"
+	"github.com/samuael/Project/MaidLink/pkg"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -100,4 +101,30 @@ func (userrepo *UserRepo) GetImageUrl(context context.Context) (string, error) {
 		}
 	}
 	return "", errors.New("Internal Error ")
+}
+
+// CreateUser
+func (userrepo *UserRepo) CreateUser(context context.Context) (*model.User, error) {
+	user := context.Value("user").(*model.User)
+	if insID, er := userrepo.DB.Collection(model.SUSER).InsertOne(context, user); er == nil {
+		id := pkg.ObjectIDFromInsertResult(insID)
+		user.ID = id
+		return user, nil
+	}
+	return nil, nil
+}
+
+func (userrepo *UserRepo) RemoveUser(contex context.Context) error {
+	userID := contex.Value("user_id").(string)
+	if oid, er := primitive.ObjectIDFromHex(userID); er == nil {
+		_, er := userrepo.DB.Collection(model.SUSER).DeleteOne(contex, bson.D{{"_id", oid}})
+		return er
+	} else {
+		return er
+	}
+}
+func (userrepo *UserRepo) CheckEmailExistance(context context.Context) error {
+	// email := context.Value("email").(string)
+	// er := userrepo.
+	return nil
 }

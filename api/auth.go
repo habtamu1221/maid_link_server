@@ -22,7 +22,7 @@ func NewAuth(sess *session.SessionHandler) *Auth {
 	return &Auth{sess}
 }
 
-func (auth *Auth) Authorize(handler http.Handler) http.Handler {
+func (auth *Auth) Authorize(handler http.HandlerFunc) http.HandlerFunc {
 	// Authorize is a function which check whether the function request with a session is valid or not
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
 		if permission := constant.Routes[request.URL.Path]; permission != nil {

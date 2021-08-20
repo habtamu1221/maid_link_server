@@ -68,3 +68,21 @@ func (userser *UserService) DeleteProfilePicture(contex context.Context) bool {
 	era := userser.Repo.ChangeImageUrl(ctx)
 	return era == nil
 }
+
+// CreateUser ...
+func (userser *UserService) CreateUser(context context.Context) *model.User {
+	user, er := userser.Repo.CreateUser(context)
+	if er == nil {
+		return user
+	}
+	return nil
+}
+
+func (userser *UserService) RemoveUser(context context.Context) bool {
+	er := userser.Repo.RemoveUser(context)
+	return er == nil
+}
+func (userser *UserService) CheckEmailExistance(context.Context) bool {
+	er := userser.Repo.CheckEmailExistance(context)
+	return er == nil
+}

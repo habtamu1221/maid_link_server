@@ -30,3 +30,13 @@ type ShortError struct {
 type ShortSuccess struct {
 	Msg string `json:"msg"`
 }
+
+type AdminInfo struct {
+	Success bool   `json:"success"`
+	Admin   *Admin `json:"admin"`
+}
+
+type UserInfo struct {
+	Success bool  `json:"success"`
+	User    *User `json:"user"`
+}

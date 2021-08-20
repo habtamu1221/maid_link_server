@@ -202,3 +202,39 @@ func (userhandler *UserHandler) DeleteProfilePicture(response http.ResponseWrite
 		response.WriteHeader(http.StatusInternalServerError)
 	}
 }
+
+// RegisterUser ...
+func (userhandler *UserHandler) RegisterUser(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	/*
+		Expected JSON :
+		{
+			"username":
+			"email":
+			"password":
+		}
+	*/
+	inpu := &struct {
+		Username string
+		Email    string
+		Password string
+	}{}
+	decoder := json.NewDecoder(request.Body)
+	if er := decoder.Decode(inpu); er == nil && inpu.Email != "" && inpu.Password != "" && inpu.Username != "" {
+		user := &model.User{Username: inpu.Username, Email: inpu.Email, Password: inpu.Password}
+		user.Role = model.CLIENT
+		ncont := context.WithValue(request.Context(), "user", user)
+		if user = userhandler.Service.CreateUser(ncont); user != nil {
+			response.WriteHeader(http.StatusCreated)
+			response.Write(pkg.GetJson(&model.UserInfo{Success: true, User: user}))
+			return
+		}
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write(pkg.GetJson(&model.ShortError{Err: "Internal Server ERROR"}))
+		return
+	} else {
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write(pkg.GetJson(&model.ShortError{Err: "bad request"}))
+		return
+	}
+}

@@ -34,9 +34,9 @@ type Maid struct {
 
 // Admin represents the admin  of the app
 type Admin struct {
-	ID        string `json:"id"  bson:"_id,omitempty" `
-	User      *User  `json:"user" bson:"-" `
-	UserID    string `json:"user_id" bson:"user_id"`
+	ID   string `json:"id"  bson:"_id,omitempty" `
+	User *User  `json:"user" bson:"-" `
+	// UserID    string `json:"user_id" bson:"user_id"`
 	CreatedBy string `json:"created_by"`
 }
 
