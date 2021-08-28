@@ -82,7 +82,7 @@ func (userser *UserService) RemoveUser(context context.Context) bool {
 	er := userser.Repo.RemoveUser(context)
 	return er == nil
 }
-func (userser *UserService) CheckEmailExistance(context.Context) bool {
+func (userser *UserService) CheckEmailExistance(context context.Context) bool {
 	er := userser.Repo.CheckEmailExistance(context)
 	return er == nil
 }

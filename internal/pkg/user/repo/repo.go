@@ -124,7 +124,10 @@ func (userrepo *UserRepo) RemoveUser(contex context.Context) error {
 	}
 }
 func (userrepo *UserRepo) CheckEmailExistance(context context.Context) error {
-	// email := context.Value("email").(string)
-	// er := userrepo.
+	email := context.Value("email").(string)
+	singleResult := userrepo.DB.Collection(model.SUSER).FindOne(context, bson.D{{"email", email}})
+	if singleResult == nil || singleResult.Err() != nil {
+		return errors.New("No Row is Selected")
+	}
 	return nil
 }

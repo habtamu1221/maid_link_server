@@ -15,6 +15,6 @@ type IUserRepo interface {
 	ChangeImageUrl(context.Context) error
 	GetImageUrl(context.Context) (string, error)
 	CreateUser(context.Context) (*model.User, error)
+	// RemoveUser using 'user_id' as a users ID input...
 	RemoveUser(context.Context) error
-	// DeleteProfilePicture(context.Context) error
 }

@@ -16,6 +16,7 @@ type AdminHandler struct {
 	Service        admin.IAdminService
 }
 
+// NewAdminHandler for creating an admin ...
 func NewAdminHandler(sessionh *session.SessionHandler, ser admin.IAdminService) *AdminHandler {
 	return &AdminHandler{
 		SessionHandler: sessionh,

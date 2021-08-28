@@ -9,6 +9,7 @@ const (
 	IAllInclusive = iota
 )
 
+// WorkTypes ...
 const (
 	BABBYSitting = "Baby Sitting"
 	Cooking      = "Cooking"
@@ -27,6 +28,7 @@ const (
 	IFullight         = iota
 )
 
+// shifts
 const (
 	FullDayAndNight  = "Full day and night"
 	FullDay          = "Full day"

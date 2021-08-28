@@ -19,7 +19,6 @@ func GetJson(object interface{}) []byte {
 // // it will return an empty string
 func ObjectIDFromInsertResult(sires *mongo.InsertOneResult) string {
 	if sires == nil {
-		println("It Was Nil")
 		return ""
 	}
 	slices := RemoveObjectIDPrefix(sires.InsertedID.(primitive.ObjectID).String())
@@ -27,7 +26,7 @@ func ObjectIDFromInsertResult(sires *mongo.InsertOneResult) string {
 }
 
 func ObjectIDFromString(objid string) string {
-	return "ObjectID(\"" + objid + "\""
+	return "ObjectID(\"" + objid + "\")"
 }
 
 // RemoveObjectIDPrefix function returning the real internal Object ID from

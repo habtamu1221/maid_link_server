@@ -8,4 +8,5 @@ import (
 
 type IAdminRepository interface {
 	CreateAdmin(context.Context) (*model.Admin, error)
+	GetAdmin(context.Context) (*model.Admin, error)
 }

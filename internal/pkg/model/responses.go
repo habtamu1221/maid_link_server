@@ -37,6 +37,20 @@ type AdminInfo struct {
 }
 
 type UserInfo struct {
-	Success bool  `json:"success"`
-	User    *User `json:"user"`
+	Success bool        `json:"success"`
+	User    interface{} `json:"user"`
+}
+type Profile struct {
+	Success bool        `json:"success"`
+	Role    int         `json:"role"`
+	Body    interface{} `json:"body"`
+}
+
+// PayForMaid this struct will beused when the client pays for the information
+// about the maid ..... the acount number and the  password are placed in the accounts.csv file
+// with their amount of money they have
+type PayForMaid struct {
+	AccNO    string `json:"account"`
+	Password string `json:"password"`
+	MaidID   string `json:"maid_id"`
 }

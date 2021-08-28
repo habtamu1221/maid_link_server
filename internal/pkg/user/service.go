@@ -16,5 +16,6 @@ type IUserService interface {
 	GetImageUrl(context.Context) string
 	DeleteProfilePicture(context.Context) bool
 	CreateUser(context.Context) *model.User
+	// RemoveUser using 'user_id' as a users ID input...
 	RemoveUser(context.Context) bool
 }

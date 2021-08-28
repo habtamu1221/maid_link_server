@@ -29,6 +29,7 @@ func (adminser *AdminService) CreateAdmin(contex context.Context) *model.Admin {
 	if user, er := adminser.URepo.CreateUser(contex); er == nil {
 		admin.User = user
 		admin.ID = user.ID
+		contex = context.WithValue(contex, "admin", admin)
 		admin, er := adminser.Repo.CreateAdmin(contex)
 		if er == nil {
 			return admin
@@ -36,6 +37,17 @@ func (adminser *AdminService) CreateAdmin(contex context.Context) *model.Admin {
 		contex = context.WithValue(contex, "user_id", user.ID)
 		adminser.URepo.RemoveUser(contex)
 		return nil
+	}
+	return nil
+}
+
+func (adminser *AdminService) GetAdmin(conte context.Context) *model.Admin {
+
+	if admin, er := adminser.Repo.GetAdmin(conte); er == nil {
+		// conte = context.WithValue(conte , "user_id"  , )
+		if admin.User, er = adminser.URepo.GetUserByID(conte); er == nil && admin.User != nil {
+			return admin
+		}
 	}
 	return nil
 }

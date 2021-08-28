@@ -35,7 +35,7 @@ func main() {
 	if database == nil {
 		return
 	}
-	collection := database.Collection("admin")
+	// collection := database.Collection("admin")
 	userCollection := database.Collection("user")
 	pass, er := pkg.HashPassword(os.Getenv("MAID_LINK_DEFAULT_PASSWORD"))
 	if er != nil {
@@ -59,13 +59,13 @@ func main() {
 		return
 	}
 	id := pkg.ObjectIDFromInsertResult(userInsertResult)
-	admin.UserID = id
-	insertResult, er := collection.InsertOne(context.TODO(), admin)
-	if er != nil {
-		println("Error While Inserting the admin ... ", er.Error())
-		return
-	}
+	// admin.UserID = id
+	// insertResult, er := collection.InsertOne(context.TODO(), admin)
+	// if er != nil {
+	// 	println("Error While Inserting the admin ... ", er.Error())
+	// 	return
+	// }
 
-	objectID := pkg.ObjectIDFromInsertResult(insertResult)
-	println(objectID)
+	// objectID := pkg.ObjectIDFromInsertResult(insertResult)
+	println(id)
 }

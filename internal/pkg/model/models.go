@@ -1,5 +1,7 @@
 package model
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 // User represents all the users in the system
 type User struct {
 	ID       string `json:"id" bson:"_id,omitempty" `
@@ -12,38 +14,59 @@ type User struct {
 
 // Client represents the client
 type Client struct {
-	ID      string   `json:"id"`
-	User    *User    `json:"user"`
-	MyMaids []string `json:"my_maids"`
+	ID      string             `json:"id" bson:"-"`
+	BsonID  primitive.ObjectID `bson:"_id" json:"-"`
+	User    *User              `json:"user" bson:"-"`
+	MyMaids []string           `json:"my_maids"`
 }
 
 // Maid
 type Maid struct {
-	ID            string   `json:"id" bson:"_id,omitempty"`
-	Phone         string   `json:"phone"`
-	Address       string   `json:"address"`
-	Bio           string   `json:"bio"`
-	ProfileImages []string `json:"profile_images"`
-	Carrers       []string `json:"carrers"`
-	User          *User    `json:"user"`
-	CreatedBy     string   `json:"created_by"`
-	Works         []*Work  `json:"works"`
-	Rates         int      `json:"rates"`
-	RateCount     int      `json:"rate_count"`
+	ID            string             `json:"id" bson:"-"`
+	BsonID        primitive.ObjectID `json:"-" bson:"_id,omitempty"`
+	Phone         string             `json:"phone"`
+	Address       string             `json:"address"`
+	Bio           string             `json:"bio"`
+	ProfileImages []string           `json:"profile_images"`
+	Carrers       []string           `json:"carrers"`
+	User          *User              `json:"user" bson:"-" `
+	CreatedBy     string             `json:"created_by"`
+	Works         []*Work            `json:"works"`
+	Rates         int                `json:"rates"`
+	RateCount     int                `json:"rate_count"`
+}
+type MaidUpdate struct {
+	ID      string `json:"id"  bson:"-"`
+	Phone   string `json:"phone"`
+	Address string `json:"address"`
+	Bio     string `json:"bio"`
 }
 
 // Admin represents the admin  of the app
 type Admin struct {
-	ID   string `json:"id"  bson:"_id,omitempty" `
-	User *User  `json:"user" bson:"-" `
+	ID     string             `json:"id"  bson:"-" `
+	User   *User              `json:"user" bson:"-" `
+	BsonID primitive.ObjectID `json:"-"  bson:"_id,omitempty"`
 	// UserID    string `json:"user_id" bson:"user_id"`
 	CreatedBy string `json:"created_by"`
 }
 
 // Work representnig the work and the shift the maid is available.
+// the instance of this struct is to be stored in the database.
 type Work struct {
-	Shift int
-	Type  int
+	NO         uint
+	Shift      int
+	Type       int
+	Experiance string
+	Experties  []string
+}
+
+// RespWork ...
+type RespWork struct {
+	Shift      string   `json:"shift"`
+	Type       string   `json:"type"`
+	Experiance string   `json:"experiance"`
+	Experties  []string `json:"experties"`
 }
 
 /*

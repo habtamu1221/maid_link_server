@@ -25,10 +25,11 @@ func NewAuth(sess *session.SessionHandler) *Auth {
 func (auth *Auth) Authorize(handler http.HandlerFunc) http.HandlerFunc {
 	// Authorize is a function which check whether the function request with a session is valid or not
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		if permission := constant.Routes[request.URL.Path]; permission != nil {
+		if succ, stcode := constant.IsAuthorized(request); succ {
 			handler.ServeHTTP(response, request)
+		} else {
+			http.Error(response, http.StatusText(stcode), stcode)
 		}
-		http.Error(response, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 	})
 }
 
@@ -53,8 +54,7 @@ func (auth *Auth) Logout(response http.ResponseWriter, request *http.Request) {
 
 // LoggedIn checks whether the user is Authenticated or not
 func (auth *Auth) IsLoggedInUser(request *http.Request) bool {
-	session := auth.SessionHandler.GetSession(request)
-	return session != nil
+	return auth.SessionHandler.GetSession(request) != nil
 }
 
 // Authenticated checks if a user has proper authority to access a give route
@@ -70,6 +70,7 @@ func (auth *Auth) Authenticated(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		con := context.WithValue(r.Context(), "session", session)
+		con = context.WithValue(con, "user_id", session.UserID)
 		r = r.WithContext(con)
 		next.ServeHTTP(w, r)
 	})

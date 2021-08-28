@@ -6,6 +6,8 @@ import (
 	"github.com/samuael/Project/MaidLink/internal/pkg/admin"
 	"github.com/samuael/Project/MaidLink/internal/pkg/model"
 	"github.com/samuael/Project/MaidLink/pkg"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -25,12 +27,28 @@ func NewAdminRepository(db *mongo.Database) admin.IAdminRepository {
 // the user information is not populated in this instance.
 func (adminr *AdminRepo) CreateAdmin(context context.Context) (*model.Admin, error) {
 	admin := context.Value("admin").(*model.Admin)
-	nid := pkg.ObjectIDFromString(admin.User.ID)
-	admin.User.ID = nid
-	if isertID, er := adminr.DB.Collection(model.SADMIN).InsertOne(context, admin); er == nil {
-		admin.ID = pkg.ObjectIDFromInsertResult(isertID)
-		return admin, nil
+	if oid, err := primitive.ObjectIDFromHex(admin.User.ID); err == nil {
+		admin.ID = admin.User.ID
+		admin.BsonID = oid
+		if isertID, er := adminr.DB.Collection(model.SADMIN).InsertOne(context, admin); er == nil {
+			admin.ID = pkg.ObjectIDFromInsertResult(isertID)
+			return admin, nil
+		} else {
+			return nil, er
+		}
 	} else {
+		return nil, err
+	}
+}
+func (adminr *AdminRepo) GetAdmin(conte context.Context) (*model.Admin, error) {
+	userID := conte.Value("user_id").(string)
+	admin := &model.Admin{}
+	if oid, er := primitive.ObjectIDFromHex(userID); er == nil {
+		er = adminr.DB.Collection(model.SADMIN).FindOne(conte, bson.D{{"_id", oid}}).Decode(admin)
+		admin.ID = pkg.RemoveObjectIDPrefix(admin.BsonID.String())
+		return admin, er
+	} else {
+		println(er.Error())
 		return nil, er
 	}
 }
