@@ -54,3 +54,9 @@ type PayForMaid struct {
 	Password string `json:"password"`
 	MaidID   string `json:"maid_id"`
 }
+
+type RateHistory struct {
+	Rates     float32  `json:"rates"`
+	RateCount int      `json:"rate_count"`
+	RatedBy   []string `json:"rated_by"`
+}

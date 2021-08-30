@@ -27,11 +27,16 @@ type IMaidService interface {
 	UpdateWork(conte context.Context) *model.Work
 	// GetMyMaids user_id user is ADMIN
 	GetMyMaids(conte context.Context) []*model.Maid
-	// GetMaid returns a maid instance using 'user_id' in the context
+	// GetMaid returns a maid instance using 'maid_id' in the context
 	GetMaid(conte context.Context) *model.Maid
 	// UpdateMaid ...this service context variables 'user_id' and 'maid'
 	// then returns an updated maid instance
 	// Remember the instance maid is *model.Maid and also the return value of this
 	// method too...
 	UpdateMaid(conte context.Context) *model.Maid
+	// GetMaids takes "offset"  "limit" to return a list of Maids
+	GetMaids(conte context.Context) []*model.Maid
+	// MyMaidsWhichIPayedFor "user_id" returns []*string
+	// NOT FINISHED YET
+	MyMaidsWhichIPayedFor(context.Context) []string
 }

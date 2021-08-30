@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MaidRepo struct {
@@ -250,13 +251,16 @@ func (maidRepo *MaidRepo) GetMyMaids(conte context.Context) ([]*model.Maid, erro
 }
 
 func (maidRepo *MaidRepo) GetMaid(conte context.Context) (*model.Maid, error) {
-	userID := conte.Value("user_id").(string)
+	userID := conte.Value("maid_id").(string)
 	println(userID)
 	maid := &model.Maid{}
 	if oid, er := primitive.ObjectIDFromHex(userID); er == nil {
-		er = maidRepo.DB.Collection(model.SMAID).FindOne(conte, bson.D{{"_id", oid}}).Decode(maid)
-		maid.ID = pkg.RemoveObjectIDPrefix(maid.BsonID.String())
-		println(string(pkg.GetJson(maid)))
+		if er = maidRepo.DB.Collection(model.SMAID).FindOne(conte, bson.D{{"_id", oid}}).Decode(maid); er == nil {
+			maid.ID = pkg.RemoveObjectIDPrefix(maid.BsonID.String())
+			println(string(pkg.GetJson(maid)))
+		} else {
+			println(er.Error())
+		}
 		return maid, er
 	} else {
 		println(er)
@@ -265,9 +269,19 @@ func (maidRepo *MaidRepo) GetMaid(conte context.Context) (*model.Maid, error) {
 }
 
 func (maidRepo *MaidRepo) UpdateMaid(conte context.Context) (*model.Maid, error) {
-	if oid, er := primitive.ObjectIDFromHex(conte.Value("user_id").(string)); er == nil {
+	if oid, er := primitive.ObjectIDFromHex(conte.Value("maid_id").(string)); er == nil {
 		maid := conte.Value("maid").(*model.Maid)
-		if uc, er := maidRepo.DB.Collection(model.SMAID).UpdateOne(conte, bson.D{{"_id", oid}}, bson.D{{"$set", bson.D{{"phone", maid.Phone}, {"address", maid.Address}, {"bio", maid.Bio}}}}); er == nil && uc.ModifiedCount > 0 {
+		if uc, er := maidRepo.DB.Collection(model.SMAID).UpdateOne(conte, bson.D{{"_id", oid}}, bson.D{
+			{"$set", bson.D{
+				{"phone", maid.Phone},
+				{"address", maid.Address},
+				{"rated_by", maid.RatedBy},
+				{"bio", maid.Bio},
+				{"rates", maid.Rates},
+				{"ratecount", maid.RateCount},
+				{"carrers", maid.Carrers},
+				{"works", maid.Works},
+			}}}); er == nil && uc.ModifiedCount > 0 {
 			return maid, er
 		} else {
 			return nil, er
@@ -275,4 +289,45 @@ func (maidRepo *MaidRepo) UpdateMaid(conte context.Context) (*model.Maid, error)
 	} else {
 		return nil, er
 	}
+}
+
+// GetMaids
+func (maidRepo *MaidRepo) GetMaids(conte context.Context) ([]*model.Maid, error) {
+	offset := conte.Value("offset").(int)
+	limit := conte.Value("limit").(int)
+	create := func(x int64) *int64 {
+		return &x
+	}
+	insta := struct {
+		OFFSET *int64
+		LIMIT  *int64
+	}{
+		OFFSET: create(int64(offset)),
+		LIMIT:  create(int64(limit)),
+	}
+	maids := []*model.Maid{}
+	if cursor, err := maidRepo.DB.Collection(model.SMAID).Find(conte, bson.D{}, &options.FindOptions{Limit: insta.LIMIT}, &options.FindOptions{Skip: insta.OFFSET}); err == nil {
+		for cursor.Next(conte) {
+			maid := &model.Maid{}
+			er := cursor.Decode(maid)
+			if er == nil {
+				maids = append(maids, maid)
+			}
+		}
+		return maids, nil
+	} else {
+		println(err.Error())
+		return maids, err
+	}
+}
+
+// MyMaidsWhichIPayedFor "user_id" returns []*string
+func (maidRepo *MaidRepo) MyMaidsWhichIPayedFor(conte context.Context) ([]string, error) {
+	maid := &model.Maid{}
+	if oid, er := primitive.ObjectIDFromHex(conte.Value("user_id").(string)); er == nil {
+		if er = maidRepo.DB.Collection(model.SMAID).FindOne(conte, bson.D{{"_id", oid}}).Decode(maid); er == nil {
+			// maid.
+		} //, &options.FindOneOptions{Projection: })
+	}
+	return nil, nil
 }

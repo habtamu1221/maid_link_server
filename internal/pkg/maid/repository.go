@@ -31,4 +31,8 @@ type IMaidRepository interface {
 	GetMaid(conte context.Context) (*model.Maid, error)
 	// UpdateMaid ...
 	UpdateMaid(context.Context) (*model.Maid, error)
+	// GetMaids takes "offset"  "limit" to return a list of Maids
+	GetMaids(conte context.Context) ([]*model.Maid, error)
+	// MyMaidsWhichIPayedFor "user_id" returns []*string
+	MyMaidsWhichIPayedFor(context.Context) ([]string, error)
 }

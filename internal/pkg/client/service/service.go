@@ -54,3 +54,11 @@ func (clientser *ClientService) GetClient(conte context.Context) *model.Client {
 	}
 	return nil
 }
+
+// UpdateClient ...
+func (clientser *ClientService) UpdateMyMaids(conte context.Context) []string {
+	if mymaids, er := clientser.Repo.UpdateMyMaids(conte); er == nil {
+		return mymaids //
+	}
+	return nil
+}

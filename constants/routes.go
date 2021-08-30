@@ -57,6 +57,30 @@ var Routes = map[string]*model.Permission{
 	// 	},
 	// 	Methods: []string{"GET"},
 	// },
+	"/maid/info/payment/": &model.Permission{
+		Roles: []int{
+			model.CLIENT,
+		},
+		Methods: []string{"GET", "POST"},
+	},
+	"/maid/rate/": &model.Permission{
+		Roles: []int{
+			model.CLIENT,
+		},
+		Methods: []string{"GET", "POST"},
+	},
+	"/admins/": &model.Permission{
+		Roles: []int{
+			model.ADMIN,
+		},
+		Methods: []string{"GET", "POST"},
+	},
+	"/admin/": &model.Permission{
+		Roles: []int{
+			model.ADMIN,
+		},
+		Methods: []string{"DELETE", "POST"},
+	},
 }
 
 // IsAuthorized ...

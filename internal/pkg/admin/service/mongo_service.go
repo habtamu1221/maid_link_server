@@ -51,3 +51,20 @@ func (adminser *AdminService) GetAdmin(conte context.Context) *model.Admin {
 	}
 	return nil
 }
+
+func (adminser *AdminService) GetMyAdmins(conte context.Context) []*model.Admin {
+	if admins, err := adminser.Repo.GetMyAdmins(conte); err == nil {
+		for a, admin := range admins {
+			conte = context.WithValue(conte, "user_id", admin.ID)
+			println(admin.ID)
+			admin.User, _ = adminser.URepo.GetUserByID(conte)
+			admins[a] = admin
+		}
+		return admins
+	}
+	return nil
+}
+
+func (adminser *AdminService) DeleteMyAdmin(conte context.Context) bool {
+	return adminser.Repo.DeleteMyAdmin(conte) == nil
+}

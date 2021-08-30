@@ -32,7 +32,8 @@ type Maid struct {
 	User          *User              `json:"user" bson:"-" `
 	CreatedBy     string             `json:"created_by"`
 	Works         []*Work            `json:"works"`
-	Rates         int                `json:"rates"`
+	RatedBy       []string           `json:"rated_by" bson:"rated_by"` // This variable holds the data of those who rated this maid
+	Rates         float32            `json:"rates"`
 	RateCount     int                `json:"rate_count"`
 }
 type MaidUpdate struct {

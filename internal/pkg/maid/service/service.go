@@ -89,6 +89,8 @@ func (maidser *MaidService) UpdateWork(conte context.Context) *model.Work {
 	}
 	return nil
 }
+
+// GetMyMaids
 func (maidser *MaidService) GetMyMaids(conte context.Context) []*model.Maid {
 	maidso := []*model.Maid{}
 	if maids, err := maidser.Repo.GetMyMaids(conte); err == nil {
@@ -97,7 +99,6 @@ func (maidser *MaidService) GetMyMaids(conte context.Context) []*model.Maid {
 			if user, er := maidser.URepo.GetUserByID(conte); er == nil {
 				user.Password = ""
 				md.User = user
-
 				maidso = append(maidso, md)
 			}
 		}
@@ -106,8 +107,10 @@ func (maidser *MaidService) GetMyMaids(conte context.Context) []*model.Maid {
 	return nil
 }
 
+// GetMaid ...
 func (maidser *MaidService) GetMaid(conte context.Context) *model.Maid {
 	if maid, er := maidser.Repo.GetMaid(conte); er == nil {
+		conte = context.WithValue(conte, "user_id", maid.ID)
 		if maid.User, er = maidser.URepo.GetUserByID(conte); er == nil && maid.User != nil {
 			return maid
 		}
@@ -120,4 +123,19 @@ func (maidser *MaidService) UpdateMaid(contr context.Context) *model.Maid {
 		return maid
 	}
 	return nil
+}
+
+func (maidser *MaidService) GetMaids(conte context.Context) []*model.Maid {
+	if maids, er := maidser.Repo.GetMaids(conte); er == nil {
+		return maids
+	}
+	return nil
+}
+
+// // MyMaidsWhichIPayedFor "user_id" returns []*string
+func (maidser *MaidService) MyMaidsWhichIPayedFor(conte context.Context) []string {
+	if maids, er := maidser.Repo.MyMaidsWhichIPayedFor(conte); er == nil {
+		return maids
+	}
+	return []string{}
 }

@@ -14,4 +14,7 @@ type IClientService interface {
 	CreateClient(context.Context) *model.Client
 	// GetClient uses "user_id" which is to be passed in the context and returns a client instance.
 	GetClient(context.Context) *model.Client
+	// UpdateClient a method which uses the context as a parameter and updates
+	// the variable "my_maids" holds the real instance.
+	UpdateMyMaids(context.Context) []string
 }

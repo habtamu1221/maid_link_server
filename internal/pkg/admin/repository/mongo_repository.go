@@ -2,6 +2,7 @@ package admin_repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/samuael/Project/MaidLink/internal/pkg/admin"
 	"github.com/samuael/Project/MaidLink/internal/pkg/model"
@@ -50,5 +51,37 @@ func (adminr *AdminRepo) GetAdmin(conte context.Context) (*model.Admin, error) {
 	} else {
 		println(er.Error())
 		return nil, er
+	}
+}
+
+func (adminr *AdminRepo) GetMyAdmins(conte context.Context) ([]*model.Admin, error) {
+	admins := []*model.Admin{}
+	adminID := conte.Value("admin_id").(string)
+	if cursor, er := adminr.DB.Collection(model.SADMIN).Find(conte, bson.D{{"createdby", adminID}}); er == nil {
+		for cursor.Next(conte) {
+			admin := &model.Admin{}
+			if der := cursor.Decode(admin); der == nil {
+				admin.ID = pkg.RemoveObjectIDPrefix(admin.BsonID.String())
+				admins = append(admins, admin)
+			}
+		}
+		return admins, nil
+	} else {
+		println(er.Error())
+		return nil, er
+	}
+}
+
+func (adminr *AdminRepo) DeleteMyAdmin(conte context.Context) error {
+	adminToBeDeleted := conte.Value("admin_id").(string)
+	userID := conte.Value("user_id").(string)
+	if oid, er := primitive.ObjectIDFromHex(adminToBeDeleted); er == nil {
+		dc, er := adminr.DB.Collection(model.SADMIN).DeleteOne(conte, bson.D{{"_id", oid}, {"createdby", userID}})
+		if dc.DeletedCount == 0 {
+			return errors.New("No record is deleted")
+		}
+		return er
+	} else {
+		return er
 	}
 }

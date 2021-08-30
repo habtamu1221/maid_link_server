@@ -2,8 +2,12 @@ package api
 
 import (
 	"context"
+	"encoding/csv"
 	"encoding/json"
 	"net/http"
+	"os"
+	"strconv"
+	"strings"
 
 	"github.com/samuael/Project/MaidLink/internal/pkg/admin"
 	"github.com/samuael/Project/MaidLink/internal/pkg/client"
@@ -103,7 +107,8 @@ func (clienth *ClientHandler) GetClient(response http.ResponseWriter, request *h
 		}
 	case model.MAID:
 		{
-			client = clienth.MService.GetMaid(request.Context())
+			conte := context.WithValue(request.Context(), "maid_id", request.Context().Value("user_id").(string))
+			client = clienth.MService.GetMaid(conte)
 		}
 	}
 	if era == nil && client != nil {
@@ -118,7 +123,7 @@ func (clienth *ClientHandler) GetClient(response http.ResponseWriter, request *h
 }
 
 func (clienth *ClientHandler) PayForMaidInfo(response http.ResponseWriter, request *http.Request) {
-	response.Header().Set("Contexnt-Type", "application/json")
+	response.Header().Set("Content-Type", "application/json")
 	input := &model.PayForMaid{}
 	jsonDec := json.NewDecoder(request.Body)
 	if decerr := jsonDec.Decode(input); decerr == nil {
@@ -128,7 +133,75 @@ func (clienth *ClientHandler) PayForMaidInfo(response http.ResponseWriter, reque
 		// check whetehr the maid is in his my maids list
 		// update my maids list of the client
 		// return the maid full profile.
-
+		if file, err := os.Open("dummyData/accounts.csv"); err == nil {
+			defer file.Close()
+			reader := csv.NewReader(file)
+			writer := csv.NewWriter(file)
+			if values, err := reader.ReadAll(); err == nil {
+				for a, account := range values {
+					if strings.Trim(input.AccNO, " ") == strings.Trim(account[0], " ") &&
+						strings.Trim(input.Password, " ") == strings.Trim(account[1], " ") {
+						if client := clienth.Service.GetClient(request.Context()); client != nil {
+							if client.MyMaids == nil {
+								client.MyMaids = []string{}
+							}
+							conte := request.Context()
+							// check whether the aid exist or not
+							userID := conte.Value("user_id").(string)
+							conte = context.WithValue(conte, "maid_id", input.MaidID)
+							if maid := clienth.MService.GetMaid(conte); maid != nil {
+								exist := false //
+								for _, id := range client.MyMaids {
+									if id == input.MaidID {
+										exist = true
+									}
+								}
+								client.MyMaids = append(client.MyMaids, input.MaidID)
+								conte = context.WithValue(conte, "user_id", userID)
+								conte = context.WithValue(conte, "my_maids", client.MyMaids)
+								if exist {
+									response.Write(pkg.GetJson(map[string]interface{}{"maid_id": input.MaidID, "maid": maid}))
+									return
+								}
+								if client := clienth.Service.UpdateMyMaids(conte); client != nil {
+									values[a][2] = func() string {
+										val, _ := strconv.Atoi(values[a][2])
+										return strconv.Itoa((val - 1))
+									}()
+									println(values[a])
+									if err = writer.WriteAll(values); err == nil {
+										response.Write(pkg.GetJson(map[string]interface{}{"maid_id": input.MaidID, "maid": maid}))
+										return
+									} else {
+										response.WriteHeader(http.StatusInternalServerError)
+										response.Write(pkg.GetJson(&model.ShortError{"Internal Server Error "}))
+										return
+									}
+								} else {
+									response.WriteHeader(http.StatusInternalServerError)
+									response.Write(pkg.GetJson(&model.ShortError{"Internal Server Error "}))
+									return
+								}
+							} else {
+								response.WriteHeader(http.StatusNotFound)
+								response.Write(pkg.GetJson(&model.ShortError{"Maid not found"}))
+								return
+							}
+						} else {
+							response.WriteHeader(http.StatusUnauthorized)
+							response.Write(pkg.GetJson(&model.ShortError{"UnAuthorized user"}))
+							return
+						}
+					}
+				}
+				response.WriteHeader(http.StatusNotFound)
+				response.Write(pkg.GetJson(&model.ShortError{"invalid account or password"}))
+			}
+		} else {
+			response.Write(pkg.GetJson(&model.ShortError{"TRANSACTION: Internal Server Error "}))
+			response.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 	} else {
 		response.WriteHeader(http.StatusBadRequest)
 		return

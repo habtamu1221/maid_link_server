@@ -13,4 +13,7 @@ type IClientRepository interface {
 	// not the User Information ...
 	CreateClient(context.Context) (*model.Client, error)
 	GetClient(context.Context) (*model.Client, error)
+	// UpdateClient a method to update a client instance using only
+	// "client" *model.Client as a parameter
+	UpdateMyMaids(context.Context) ([]string, error)
 }

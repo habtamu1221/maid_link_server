@@ -45,3 +45,20 @@ func (clientr *ClientRepo) GetClient(conte context.Context) (*model.Client, erro
 		return nil, er
 	}
 }
+
+// UpdateClient ...
+func (clientr *ClientRepo) UpdateMyMaids(conte context.Context) ([]string, error) {
+	mymaids := conte.Value("my_maids").([]string)
+	if oid, er := primitive.ObjectIDFromHex(conte.Value("user_id").(string)); er == nil {
+		if uc, er := clientr.DB.Collection(model.SCLIENT).UpdateOne(conte,
+			bson.D{{"_id", oid}},
+			bson.D{{"$set", bson.D{{"mymaids", mymaids}}}}); er == nil && uc.ModifiedCount > 0 {
+			return mymaids, er
+		} else {
+			println(er.Error())
+			return nil, er
+		}
+	} else {
+		return nil, er
+	}
+}

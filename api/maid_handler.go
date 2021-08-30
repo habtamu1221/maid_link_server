@@ -23,6 +23,23 @@ type MaidHandler struct {
 	UService user.IUserService
 }
 
+/*
+ Registermaid
+ AddProfileImage
+ RemoveProfileImage
+ GetProfileImages
+ GetUser
+ CreateWork
+ DeleteWork
+ UpdateWork
+ GetWorks
+ GetAdminMaids
+ MaidUpdateProfile
+ GetMaids
+ RateMaid
+*/
+
+// NewMaidHandler ..
 func NewMaidHandler(sess *session.SessionHandler, ser maid.IMaidService, uservice user.IUserService) *MaidHandler {
 	return &MaidHandler{
 		Session:  sess,
@@ -270,11 +287,6 @@ func (maidh *MaidHandler) GetWorks(response http.ResponseWriter, request *http.R
 	response.WriteHeader(http.StatusNotFound)
 }
 
-func (maidh *MaidHandler) UpdateMaid(response http.ResponseWriter, request *http.Request) {
-	response.Header().Set("Content-Type", "application/json")
-
-}
-
 // GetAdminMaids returns the list of maids created by this admin...
 func (maidh *MaidHandler) GetAdminMaids(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
@@ -302,6 +314,7 @@ func (maidh *MaidHandler) MaidUpdateProfile(response http.ResponseWriter, reques
 	if decErro := jsonDec.Decode(maidu); decErro == nil || maidu.ID == "" {
 		// Get The Maid Using the ID of the maid
 		conte := request.Context()
+		conte = context.WithValue(conte, "maid_id", conte.Value("user_id").(string))
 		if maid := maidh.Service.GetMaid(conte); maid != nil {
 			maid.Phone = func() string {
 				if maidu.Phone != "" || len(maidu.Phone) >= 10 || func() bool {
@@ -331,6 +344,7 @@ func (maidh *MaidHandler) MaidUpdateProfile(response http.ResponseWriter, reques
 				}
 			}()
 			conte = context.WithValue(conte, "maid", maid)
+			conte = context.WithValue(conte, "maid_id", maid.ID)
 			if maid = maidh.Service.UpdateMaid(conte); maid != nil {
 				// if the maid is not null then do this ...
 				maidu.ID = maid.ID
@@ -349,13 +363,86 @@ func (maidh *MaidHandler) MaidUpdateProfile(response http.ResponseWriter, reques
 			response.Write(pkg.GetJson(&model.ShortError{"Resource not found.."}))
 			return
 		}
-		// maid.ID = maidu.ID
-
-		// maid.Username = func()string{ if maidu.Username != "" {return maidu.Username}return maid.Username  }()
 	} else {
 		response.WriteHeader(http.StatusBadRequest)
 		response.Write(pkg.GetJson(&model.ShortError{"Invalid json input!"}))
 		return
 	}
-	// decoding a json
 }
+
+// GetMaids ..
+func (maidh *MaidHandler) GetMaids(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	offset, er := strconv.Atoi(request.FormValue("offset"))
+	if er != nil {
+		offset = 0
+	}
+	limit, er := strconv.Atoi(request.FormValue("limit"))
+	if er != nil {
+		limit = offset + 3
+	}
+	conte := request.Context()
+	conte = context.WithValue(conte, "offset", offset)
+	conte = context.WithValue(conte, "limit", limit)
+	if maids := maidh.Service.GetMaids(conte); maids != nil {
+		response.Write(pkg.GetJson(maids))
+		return
+	}
+	response.WriteHeader(http.StatusNotFound)
+	response.Write(pkg.GetJson(&model.ShortError{"no record found"}))
+}
+
+// ----------------------- RETING OF MAIDS BY CLIENTS ---------------------------
+
+func (maidh *MaidHandler) RateMaid(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	rate, er := strconv.Atoi(request.FormValue("rate"))
+	maidid := request.FormValue("maid_id")
+	if maidid == "" {
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write(pkg.GetJson(&model.ShortError{"Invalid rate value."}))
+		return
+	}
+	if er == nil && rate <= 5 && rate >= 0 {
+		conte := request.Context()
+		conte = context.WithValue(conte, "maid_id", maidid)
+		if maid := maidh.Service.GetMaid(conte); maid != nil {
+			userid := conte.Value("user_id").(string)
+			for _, id := range maid.RatedBy {
+				if id == userid {
+					response.Write(pkg.GetJson(&model.RateHistory{Rates: maid.Rates, RateCount: maid.RateCount, RatedBy: maid.RatedBy}))
+					return
+				}
+			}
+			maid.Rates = ((maid.Rates * float32(maid.RateCount)) + float32(rate)) / (float32(maid.RateCount) + 1)
+			maid.RateCount += 1
+			if maid.RatedBy == nil {
+				maid.RatedBy = []string{}
+			}
+			maid.RatedBy = append(maid.RatedBy, userid)
+			conte = context.WithValue(conte, "maid", maid)
+			if maid = maidh.Service.UpdateMaid(conte); maid != nil {
+				response.Write(pkg.GetJson(&model.RateHistory{Rates: maid.Rates, RateCount: maid.RateCount, RatedBy: maid.RatedBy}))
+				return
+			} else {
+				response.WriteHeader(http.StatusInternalServerError)
+				response.Write(pkg.GetJson(&model.ShortError{"Internal server error "}))
+				return
+			}
+		} else {
+			response.Write(pkg.GetJson(&model.ShortError{"maid not found"}))
+			response.WriteHeader(http.StatusNotFound)
+		}
+	} else {
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write(pkg.GetJson(&model.ShortError{"Invalid rate value."}))
+	}
+}
+
+// GetMyMaids  function to get all the maids whish he/she have paid for the
+// // this method is allowed for only clients...
+// func (maidh *MaidHandler) GetMyMaids(response http.ResponseWriter, request *http.Request) {
+// 	response.Header().Set("Content-Type", "application/json")
+// 	mymaids := maidh.Service.MyMaidsWhichIPayedFor(request.Context())
+// 	response.Write(pkg.GeJson(mymaids))
+// }
