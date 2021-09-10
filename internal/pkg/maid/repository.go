@@ -3,7 +3,7 @@ package maid
 import (
 	"context"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
 )
 
 // IMaidRepository represents the repository object
@@ -33,6 +33,10 @@ type IMaidRepository interface {
 	UpdateMaid(context.Context) (*model.Maid, error)
 	// GetMaids takes "offset"  "limit" to return a list of Maids
 	GetMaids(conte context.Context) ([]*model.Maid, error)
-	// MyMaidsWhichIPayedFor "user_id" returns []*string
-	MyMaidsWhichIPayedFor(context.Context) ([]string, error)
+	// // MyMaidsWhichIPayedFor "user_id" returns []*string
+	// MyMaidsWhichIPayedFor(context.Context) ([]string, error)
+	// SearchMaids
+	SearchMaids(context.Context) ([]*model.Maid, error)
+	// SearchIt uses "q"
+	SearchIt(context.Context) ([]*interface{}, error)
 }

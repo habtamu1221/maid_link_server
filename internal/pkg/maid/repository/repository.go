@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/maid"
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/pkg"
+	"github.com/habte/Project/MaidLink/internal/pkg/maid"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/pkg"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -279,7 +279,7 @@ func (maidRepo *MaidRepo) UpdateMaid(conte context.Context) (*model.Maid, error)
 				{"bio", maid.Bio},
 				{"rates", maid.Rates},
 				{"ratecount", maid.RateCount},
-				{"carrers", maid.Carrers},
+				// {"carrers", maid.Carrers},
 				{"works", maid.Works},
 			}}}); er == nil && uc.ModifiedCount > 0 {
 			return maid, er
@@ -287,7 +287,7 @@ func (maidRepo *MaidRepo) UpdateMaid(conte context.Context) (*model.Maid, error)
 			return nil, er
 		}
 	} else {
-		return nil, er
+		return nil, errors.New("no update")
 	}
 }
 
@@ -311,6 +311,7 @@ func (maidRepo *MaidRepo) GetMaids(conte context.Context) ([]*model.Maid, error)
 			maid := &model.Maid{}
 			er := cursor.Decode(maid)
 			if er == nil {
+				maid.ID = pkg.RemoveObjectIDPrefix(maid.BsonID.String())
 				maids = append(maids, maid)
 			}
 		}
@@ -321,13 +322,46 @@ func (maidRepo *MaidRepo) GetMaids(conte context.Context) ([]*model.Maid, error)
 	}
 }
 
-// MyMaidsWhichIPayedFor "user_id" returns []*string
-func (maidRepo *MaidRepo) MyMaidsWhichIPayedFor(conte context.Context) ([]string, error) {
-	maid := &model.Maid{}
-	if oid, er := primitive.ObjectIDFromHex(conte.Value("user_id").(string)); er == nil {
-		if er = maidRepo.DB.Collection(model.SMAID).FindOne(conte, bson.D{{"_id", oid}}).Decode(maid); er == nil {
-			// maid.
-		} //, &options.FindOneOptions{Projection: })
+// SearchMaids(context.Context) []*model.Maid  , error
+func (maidRepo *MaidRepo) SearchMaids(conte context.Context) ([]*model.Maid, error) {
+	offset := conte.Value("offset").(int)
+	limit := conte.Value("limit").(int)
+	q := conte.Value("q").(string)
+	println(offset, limit, q)
+
+	create := func(val int64) *int64 {
+		return &val
 	}
+
+	offsetAndLimit := struct {
+		Offset *int64
+		Limit  *int64
+	}{
+		Offset: create(int64(offset)),
+		Limit:  create(int64(limit)),
+	}
+	maids := []*model.Maid{}
+	// creating an index
+	if cursor, er := maidRepo.DB.Collection(model.SMAID).Find(conte, bson.M{"$text": bson.D{{"$search", q + "*"}}} /*Options*/, &options.FindOptions{Limit: offsetAndLimit.Limit}, &options.FindOptions{Skip: offsetAndLimit.Offset}); er == nil && cursor != nil {
+		for cursor.Next(conte) {
+			maid := &model.Maid{}
+			if er := cursor.Decode(maid); er == nil {
+				maids = append(maids, maid)
+			}
+		}
+		return maids, nil
+	} else {
+		println(er.Error())
+	}
+	return nil, nil
+}
+
+func (maidRepo *MaidRepo) SearchIt(conte context.Context) ([]*interface{}, error) {
+	q := conte.Value("q").(string)
+	// find a maid instance and populate teh user of maid instance using the ID in the query
+	users := []*model.User{}
+	maids := []*model.Maid{}
+	// if er := maidRepo.DB.Collection(model.SUSER).Find(conte , bson)
+	println(users, maids, q)
 	return nil, nil
 }

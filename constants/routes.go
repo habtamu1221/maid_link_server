@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
 )
 
 //List of roues will be listed here...
@@ -19,6 +19,12 @@ var Routes = map[string]*model.Permission{
 			model.ADMIN,
 		},
 		Methods: []string{"POST"},
+	},
+	"/maid/": &model.Permission{
+		Roles: []int{
+			model.MAID,
+		},
+		Methods: []string{"POST", "PUT", "GET"},
 	},
 	"/maid/profile/add/": &model.Permission{
 		Roles: []int{
@@ -80,6 +86,12 @@ var Routes = map[string]*model.Permission{
 			model.ADMIN,
 		},
 		Methods: []string{"DELETE", "POST"},
+	},
+	"/client/maids/": &model.Permission{
+		Roles: []int{
+			model.CLIENT,
+		},
+		Methods: []string{"GET"},
 	},
 }
 

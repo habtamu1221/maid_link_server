@@ -3,9 +3,9 @@ package clientService
 import (
 	"context"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/client"
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/internal/pkg/user"
+	"github.com/habte/Project/MaidLink/internal/pkg/client"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/user"
 )
 
 type ClientService struct {
@@ -59,6 +59,15 @@ func (clientser *ClientService) GetClient(conte context.Context) *model.Client {
 func (clientser *ClientService) UpdateMyMaids(conte context.Context) []string {
 	if mymaids, er := clientser.Repo.UpdateMyMaids(conte); er == nil {
 		return mymaids //
+	}
+	return nil
+}
+
+// MyMaidsWhichIPayedFor "user_id" returns []*string
+// NOT FINISHED YET
+func (clientser *ClientService) MyMaidsWhichIPayedForString(conte context.Context) []string {
+	if maidsid, er := clientser.Repo.MyMaidsWhichIPayedForString(conte); er == nil {
+		return maidsid
 	}
 	return nil
 }

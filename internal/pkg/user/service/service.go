@@ -3,8 +3,8 @@ package user_service
 import (
 	"context"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/internal/pkg/user"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/user"
 )
 
 type UserService struct {
@@ -85,4 +85,12 @@ func (userser *UserService) RemoveUser(context context.Context) bool {
 func (userser *UserService) CheckEmailExistance(context context.Context) bool {
 	er := userser.Repo.CheckEmailExistance(context)
 	return er == nil
+}
+
+func (userser *UserService) DeleteAccount(conte context.Context) bool {
+	return userser.Repo.DeleteAccount(conte) == nil
+}
+
+func (userser *UserService) ChangeUsername(conte context.Context) bool {
+	return userser.Repo.ChangeUsername(conte) == nil
 }

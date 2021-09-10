@@ -4,13 +4,16 @@ import (
 	"context"
 	"os"
 	"sync"
+	"time"
 
+	"github.com/habte/Project/MaidLink/internal/pkg/db"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/pkg"
 	"github.com/joho/godotenv"
-	"github.com/samuael/Project/MaidLink/internal/pkg/db"
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/pkg"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 var database *mongo.Database
@@ -46,8 +49,8 @@ func main() {
 		// ID: "61182e98ebeeebbee33314b9",
 		User: &model.User{
 			// ID:       "61182e98ebeeebbee33314b9",
-			Username: "Samuael",
-			Email:    "samuaeladnew@gmail.com",
+			Username: "habte",
+			Email:    "habteadnew@gmail.com",
 			Password: pass,
 			Role:     model.ADMIN,
 			// ImageUrl: ,
@@ -72,4 +75,44 @@ func main() {
 
 	// objectID := pkg.ObjectIDFromInsertResult(insertResult)
 	// println(insertResult.InsertedID.(primitive.ObjectID).(string))
+
+	// CREATING AN INDEX FOR A COLLECTION "MAIDS".
+	index := []mongo.IndexModel{
+		{
+			Keys: bsonx.Doc{
+				{Key: "carrers", Value: bsonx.String("text")},
+				{Key: "address", Value: bsonx.String("text")},
+				{Key: "bio", Value: bsonx.String("text")},
+				{Key: "phone", Value: bsonx.String("text")},
+				{Key: "works", Value: bsonx.String("text")},
+				// {Key: "carrers", Value: bsonx.Array(bsonx.Arr{[]bsonx.Val{bsontype.Array.String(), byte("text"}})},
+			},
+		},
+	}
+	indexUser := []mongo.IndexModel{
+		{
+			Keys: bsonx.Doc{
+				{Key: "username", Value: bsonx.String("text")},
+				{Key: "email", Value: bsonx.String("text")},
+				{Key: "role", Value: bsonx.Int32(1)},
+				// {Key: "carrers", Value: bsonx.Array(bsonx.Arr{[]bsonx.Val{bsontype.Array.String(), byte("text"}})},
+			},
+		},
+	}
+	/*
+		bson.D{{"myFirstTextField", "text"},{"mySecondTextField", "text"}}*/
+	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
+	_, errIndex := database.Collection(model.SMAID).Indexes().CreateMany(context.TODO(), index, opts)
+	if errIndex != nil {
+		println(errIndex.Error())
+		panic(errIndex)
+	}
+
+	// -----------------------------------------------
+	opts = options.CreateIndexes().SetMaxTime(10 * time.Second)
+	_, errIndex = database.Collection(model.SUSER).Indexes().CreateMany(context.TODO(), indexUser, opts)
+	if errIndex != nil {
+		println("Creating an index in the user : ", errIndex.Error())
+		panic(errIndex)
+	}
 }

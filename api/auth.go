@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	constant "github.com/samuael/Project/MaidLink/constants"
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/internal/pkg/session"
-	"github.com/samuael/Project/MaidLink/pkg"
+	constant "github.com/habte/Project/MaidLink/constants"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/session"
+	"github.com/habte/Project/MaidLink/pkg"
 )
 
 type Auth struct {

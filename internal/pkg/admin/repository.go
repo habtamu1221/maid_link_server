@@ -3,7 +3,7 @@ package admin
 import (
 	"context"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
 )
 
 type IAdminRepository interface {

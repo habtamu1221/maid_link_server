@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/admin"
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/internal/pkg/session"
-	"github.com/samuael/Project/MaidLink/internal/pkg/user"
-	"github.com/samuael/Project/MaidLink/pkg"
+	"github.com/habte/Project/MaidLink/internal/pkg/admin"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/session"
+	"github.com/habte/Project/MaidLink/internal/pkg/user"
+	"github.com/habte/Project/MaidLink/pkg"
 )
 
 type AdminHandler struct {

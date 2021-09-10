@@ -3,7 +3,7 @@ package maid
 import (
 	"context"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
 )
 
 type IMaidService interface {
@@ -36,7 +36,9 @@ type IMaidService interface {
 	UpdateMaid(conte context.Context) *model.Maid
 	// GetMaids takes "offset"  "limit" to return a list of Maids
 	GetMaids(conte context.Context) []*model.Maid
-	// MyMaidsWhichIPayedFor "user_id" returns []*string
-	// NOT FINISHED YET
-	MyMaidsWhichIPayedFor(context.Context) []string
+	// SearchMaids uses "q"  , "offset" , "limit" to return a list of maids
+	// which satisfy the case.
+	SearchMaids(context.Context) []*model.Maid
+	// SearchIt uses "q"
+	SearchIt(context.Context) []*interface{}
 }

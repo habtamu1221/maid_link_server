@@ -3,9 +3,9 @@ package admin_service
 import (
 	"context"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/admin"
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/internal/pkg/user"
+	"github.com/habte/Project/MaidLink/internal/pkg/admin"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/user"
 )
 
 // AdminService struct representing.

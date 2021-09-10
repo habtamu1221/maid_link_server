@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
 )
 
 type IUserRepo interface {
@@ -17,4 +17,7 @@ type IUserRepo interface {
 	CreateUser(context.Context) (*model.User, error)
 	// RemoveUser using 'user_id' as a users ID input...
 	RemoveUser(context.Context) error
+	// DeleteAccount  session
+	DeleteAccount(context.Context) error
+	ChangeUsername(context.Context) error
 }

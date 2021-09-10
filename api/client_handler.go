@@ -9,13 +9,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/admin"
-	"github.com/samuael/Project/MaidLink/internal/pkg/client"
-	"github.com/samuael/Project/MaidLink/internal/pkg/maid"
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/internal/pkg/session"
-	"github.com/samuael/Project/MaidLink/internal/pkg/user"
-	"github.com/samuael/Project/MaidLink/pkg"
+	"github.com/habte/Project/MaidLink/internal/pkg/admin"
+	"github.com/habte/Project/MaidLink/internal/pkg/client"
+	"github.com/habte/Project/MaidLink/internal/pkg/maid"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/session"
+	"github.com/habte/Project/MaidLink/internal/pkg/user"
+	"github.com/habte/Project/MaidLink/pkg"
 )
 
 type ClientHandler struct {
@@ -62,7 +62,7 @@ func (clienth *ClientHandler) RegisterClient(response http.ResponseWriter, reque
 		ncont := context.WithValue(request.Context(), "email", inpu.Email)
 		if clienth.UService.CheckEmailExistance(ncont) {
 			response.WriteHeader(http.StatusUnauthorized)
-			response.Write(pkg.GetJson(&model.ShortError{Err: "User Already Exist ... "}))
+			response.Write(pkg.GetJson(&model.ShortError{Err: "User account already exist"}))
 			return
 		}
 		passhash, er := pkg.HashPassword(inpu.Password)
@@ -206,4 +206,32 @@ func (clienth *ClientHandler) PayForMaidInfo(response http.ResponseWriter, reque
 		response.WriteHeader(http.StatusBadRequest)
 		return
 	}
+}
+
+// SearchForMaid  .... .
+func (clienth *ClientHandler) SearchForMaid(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	println("CALLEDDDDD")
+	offset, er := strconv.Atoi(request.FormValue("offset"))
+	if er != nil {
+		offset = 0
+	}
+	limit, err := strconv.Atoi(request.FormValue("offset"))
+	if err != nil || limit == offset {
+		limit = offset + 2
+	}
+	if text := request.FormValue("q"); text != "" {
+		println("Search q=", text)
+		conte := context.WithValue(request.Context(), "q", text)
+		conte = context.WithValue(conte, "offset", offset)
+		conte = context.WithValue(conte, "limit", limit)
+		if maids := clienth.MService.SearchMaids(conte); maids != nil {
+			response.Write(pkg.GetJson(maids))
+			return
+		}
+		response.WriteHeader(http.StatusNotFound)
+		return
+	}
+	response.Write(pkg.GetJson(&model.ShortError{"invalid query"}))
+	response.WriteHeader(http.StatusNotFound)
 }

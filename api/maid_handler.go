@@ -10,17 +10,19 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/maid"
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/internal/pkg/session"
-	"github.com/samuael/Project/MaidLink/internal/pkg/user"
-	"github.com/samuael/Project/MaidLink/pkg"
+	"github.com/habte/Project/MaidLink/internal/pkg/client"
+	"github.com/habte/Project/MaidLink/internal/pkg/maid"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/session"
+	"github.com/habte/Project/MaidLink/internal/pkg/user"
+	"github.com/habte/Project/MaidLink/pkg"
 )
 
 type MaidHandler struct {
 	Session  *session.SessionHandler
 	Service  maid.IMaidService
 	UService user.IUserService
+	CService client.IClientService
 }
 
 /*
@@ -40,11 +42,12 @@ type MaidHandler struct {
 */
 
 // NewMaidHandler ..
-func NewMaidHandler(sess *session.SessionHandler, ser maid.IMaidService, uservice user.IUserService) *MaidHandler {
+func NewMaidHandler(sess *session.SessionHandler, ser maid.IMaidService, uservice user.IUserService, clser client.IClientService) *MaidHandler {
 	return &MaidHandler{
 		Session:  sess,
 		Service:  ser,
 		UService: uservice,
+		CService: clser,
 	}
 }
 
@@ -195,9 +198,9 @@ func (maidh *MaidHandler) GetProfileImages(response http.ResponseWriter, request
 // GetUser a method :
 func (maidh *MaidHandler) GetUser(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	if profileImage := request.FormValue("user_id"); profileImage != "" {
-		println(profileImage)
-		contex := context.WithValue(request.Context(), "user_id", profileImage)
+	if userid := request.FormValue("user_id"); userid != "" {
+		println(userid)
+		contex := context.WithValue(request.Context(), "user_id", userid)
 		if user := maidh.Service.GetUser(contex); user != nil {
 			response.Write(pkg.GetJson(user))
 			return
@@ -213,13 +216,15 @@ func (maidh *MaidHandler) GetUser(response http.ResponseWriter, request *http.Re
 
 func (maidh *MaidHandler) CreateWork(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	input := &model.Work{}
+	input := &model.InWork{}
+
 	jsonDecode := json.NewDecoder(request.Body)
 	if err := jsonDecode.Decode(input); err == nil {
 		conte := request.Context()
 		session := conte.Value("session").(*model.Session)
 		conte = context.WithValue(conte, "user_id", session.UserID)
-		conte = context.WithValue(conte, "work", input)
+		work := &model.Work{NO: 0, Shift: input.Shift, Type: input.Type, Experiance: input.Experiance, Experties: input.Experties}
+		conte = context.WithValue(conte, "work", work)
 		if work := maidh.Service.CreateWork(conte); work != nil {
 			response.WriteHeader(http.StatusCreated)
 			response.Write(pkg.GetJson(work))
@@ -228,6 +233,8 @@ func (maidh *MaidHandler) CreateWork(response http.ResponseWriter, request *http
 		response.WriteHeader(http.StatusNotModified)
 		response.Write(pkg.GetJson(&model.ShortError{Err: "Not Modified"}))
 		return
+	} else {
+		println(err.Error())
 	}
 	response.WriteHeader(http.StatusBadRequest)
 }
@@ -254,12 +261,13 @@ func (maidh *MaidHandler) DeleteWork(response http.ResponseWriter, request *http
 // UpdateWork method to update the work using the work ID
 func (maidh *MaidHandler) UpdateWork(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	input := &model.Work{}
+	input := &model.InWork{}
 	jsonDecode := json.NewDecoder(request.Body)
 	if err := jsonDecode.Decode(input); err == nil {
-		conte := context.WithValue(request.Context(), "work", input)
-		if input = maidh.Service.UpdateWork(conte); input != nil {
-			response.Write(pkg.GetJson(input))
+		work := &model.Work{NO: uint(input.NO), Shift: input.Shift, Type: input.Type, Experiance: input.Experiance, Experties: input.Experties}
+		conte := context.WithValue(request.Context(), "work", work)
+		if work = maidh.Service.UpdateWork(conte); input != nil {
+			response.Write(pkg.GetJson(work))
 			return
 		}
 		response.WriteHeader(http.StatusNotFound)
@@ -297,6 +305,7 @@ func (maidh *MaidHandler) GetAdminMaids(response http.ResponseWriter, request *h
 	}
 	maids := maidh.Service.GetMyMaids(conte)
 	if maids == nil {
+		response.WriteHeader(http.StatusNotFound)
 		response.Write(pkg.GetJson([]interface{}{}))
 		return
 	}
@@ -308,11 +317,12 @@ func (maidh *MaidHandler) GetAdminMaids(response http.ResponseWriter, request *h
 // performed using user update request.
 func (maidh *MaidHandler) MaidUpdateProfile(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-	maidu := model.MaidUpdate{}
+	maidu := &model.MaidUpdate{}
 	jsonDec := json.NewDecoder(request.Body)
 
 	if decErro := jsonDec.Decode(maidu); decErro == nil || maidu.ID == "" {
 		// Get The Maid Using the ID of the maid
+		println(string(pkg.GetJson(maidu)))
 		conte := request.Context()
 		conte = context.WithValue(conte, "maid_id", conte.Value("user_id").(string))
 		if maid := maidh.Service.GetMaid(conte); maid != nil {
@@ -355,7 +365,7 @@ func (maidh *MaidHandler) MaidUpdateProfile(response http.ResponseWriter, reques
 				return
 			} else {
 				response.WriteHeader(http.StatusInternalServerError)
-				response.Write(pkg.GetJson(&model.ShortError{"Internal server error "}))
+				response.Write(pkg.GetJson(&model.ShortError{" data not modified "}))
 				return
 			}
 		} else {
@@ -440,9 +450,43 @@ func (maidh *MaidHandler) RateMaid(response http.ResponseWriter, request *http.R
 }
 
 // GetMyMaids  function to get all the maids whish he/she have paid for the
-// // this method is allowed for only clients...
-// func (maidh *MaidHandler) GetMyMaids(response http.ResponseWriter, request *http.Request) {
-// 	response.Header().Set("Content-Type", "application/json")
-// 	mymaids := maidh.Service.MyMaidsWhichIPayedFor(request.Context())
-// 	response.Write(pkg.GeJson(mymaids))
-// }
+// this method is allowed for only clients...
+func (maidh *MaidHandler) GetMyMaids(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	if mymaids := maidh.CService.MyMaidsWhichIPayedForString(request.Context()); mymaids != nil {
+		maids := []*model.Maid{}
+		conte := request.Context()
+		for _, mid := range mymaids {
+			conte = context.WithValue(conte, "maid_id", mid)
+			if maid := maidh.Service.GetMaid(conte); maid != nil {
+				maids = append(maids, maid)
+			}
+		}
+		response.Write(pkg.GetJson(maids))
+		return
+	}
+	response.Write(pkg.GetJson([]interface{}{}))
+	response.WriteHeader(http.StatusNotFound)
+}
+
+func (maidh *MaidHandler) DeleteMaid(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+
+}
+
+// SearchMaids
+func (maidh *MaidHandler) SearchMaids(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+
+	q := strings.Trim(request.FormValue("q"), " ")
+
+	println("Query Test , ", q)
+	if q != "" {
+		conte := context.WithValue(request.Context(), "q", q)
+		if maids := maidh.Service.SearchIt(conte); maids != nil {
+
+		}
+	}
+	response.WriteHeader(http.StatusBadRequest)
+	response.Write(pkg.GetJson(&model.ShortError{"bad input!"}))
+}

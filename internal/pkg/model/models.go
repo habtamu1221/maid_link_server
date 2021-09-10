@@ -70,6 +70,14 @@ type RespWork struct {
 	Experties  []string `json:"experties"`
 }
 
+type InWork struct {
+	NO         int      `json:"no,omitempty" `
+	Shift      int      `json:"shift"`
+	Type       int      `json:"type"`
+	Experiance string   `json:"experiance"`
+	Experties  []string `json:"experties"`
+}
+
 /*
 	what is needed from maids
 	- baby sitter

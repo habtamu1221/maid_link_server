@@ -9,10 +9,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/internal/pkg/session"
-	"github.com/samuael/Project/MaidLink/internal/pkg/user"
-	"github.com/samuael/Project/MaidLink/pkg"
+	"github.com/hate/Project/MaidLink/internal/pkg/model"
+	"github.com/hate/Project/MaidLink/internal/pkg/session"
+	"github.com/hate/Project/MaidLink/internal/pkg/user"
+	"github.com/hate/Project/MaidLink/pkg"
 )
 
 // UserHandler ...
@@ -43,13 +43,7 @@ func (userhandler *UserHandler) UserLogin(response http.ResponseWriter, request 
 	}
 	context := context.WithValue(request.Context(), "email", loginData.Email)
 	user := userhandler.Service.GetUserByEmail(context)
-	if user == nil {
-		response.WriteHeader(401)
-		response.Write(pkg.GetJson(&model.Error{Message: "error", Reason: "User Not Authorized"}))
-		return
-	}
-	// ------- check the password
-	if !(pkg.CompareHash(user.Password, loginData.Password)) {
+	if user == nil || !(pkg.CompareHash(user.Password, loginData.Password)) {
 		response.WriteHeader(http.StatusNotFound)
 		response.Write(pkg.GetJson(&model.ShortError{Err: "Invalid Username or Password"}))
 		return
@@ -70,6 +64,22 @@ func (userhandler *UserHandler) UserLogin(response http.ResponseWriter, request 
 		User:  user,
 	}
 	response.Write(pkg.GetJson(successMessage))
+}
+
+// DeleteAccount ....
+func (userhandler *UserHandler) DeleteAccount(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+
+	con := request.Context()
+	if maidID := request.FormValue("maid_id"); maidID != "" {
+		con = context.WithValue(con, "user_id", maidID)
+	}
+	success := userhandler.Service.DeleteAccount(con)
+	if success {
+		response.Write(pkg.GetJson(&model.ShortSuccess{"succesfuly created"}))
+		return
+	}
+	response.WriteHeader(http.StatusUnauthorized)
 }
 
 // ChangePassword  ...
@@ -200,5 +210,34 @@ func (userhandler *UserHandler) DeleteProfilePicture(response http.ResponseWrite
 		return
 	} else {
 		response.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func (userhandler *UserHandler) ChangeUsername(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Content-Type", "application/json")
+	val := &struct {
+		Username string `json:"username"`
+	}{}
+	jsonDecode := json.NewDecoder(request.Body)
+	decodeErr := jsonDecode.Decode(val)
+	if decodeErr != nil {
+		println(decodeErr.Error())
+		response.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	println(val.Username)
+	if session := userhandler.SessionHandler.GetSession(request); session != nil {
+		ncont := context.WithValue(request.Context(), "user_id", session.UserID)
+		ncont = context.WithValue(ncont, "username", val.Username)
+		if success := userhandler.Service.ChangeUsername(ncont); success {
+			response.Write(pkg.GetJson(map[string]string{"username": val.Username}))
+			return
+		} else {
+			response.WriteHeader(http.StatusNotFound)
+			return
+		}
+	} else {
+		response.WriteHeader(http.StatusUnauthorized)
+		return
 	}
 }

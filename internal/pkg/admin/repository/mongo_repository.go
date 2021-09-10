@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/admin"
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/pkg"
+	"github.com/habte/Project/MaidLink/internal/pkg/admin"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/pkg"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

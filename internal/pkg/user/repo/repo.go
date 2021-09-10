@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/internal/pkg/user"
-	"github.com/samuael/Project/MaidLink/pkg"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/user"
+	"github.com/habte/Project/MaidLink/pkg"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -74,6 +74,25 @@ func (userrepo *UserRepo) ChangePassword(context context.Context) (*model.User, 
 		return nil, er
 	}
 }
+
+func (userrepo *UserRepo) ChangeUsername(conte context.Context) error {
+	userID := conte.Value("user_id").(string)
+	imageUrl := conte.Value("username").(string)
+	if oid, er := primitive.ObjectIDFromHex(userID); er == nil {
+		userrepo.DB.Collection(model.SUSER).UpdateOne(conte,
+			bson.D{{"_id", oid}},
+			bson.D{{"$set",
+				bson.D{
+					{"username", imageUrl},
+				}}})
+		println("was succesful")
+		return nil
+	} else {
+		print(er.Error())
+		return er
+	}
+}
+
 func (userrepo *UserRepo) ChangeImageUrl(context context.Context) error {
 	userID := context.Value("user_id").(string)
 	imageUrl := context.Value("image_url").(string)
@@ -130,4 +149,19 @@ func (userrepo *UserRepo) CheckEmailExistance(context context.Context) error {
 		return errors.New("No Row is Selected")
 	}
 	return nil
+}
+
+//
+func (userrepo *UserRepo) DeleteAccount(conte context.Context) error {
+	session := conte.Value("session").(*model.Session) //
+	if oid, er := primitive.ObjectIDFromHex(session.UserID); er == nil {
+		if dr, er := userrepo.DB.Collection(model.SUSER).DeleteOne(conte, bson.D{{"_id", oid}}); er == nil && dr.DeletedCount > 0 {
+			return nil
+		} else {
+			return er
+		}
+
+	} else {
+		return er
+	}
 }

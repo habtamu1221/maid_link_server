@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
 )
 
 type IUserService interface {
@@ -18,4 +18,7 @@ type IUserService interface {
 	CreateUser(context.Context) *model.User
 	// RemoveUser using 'user_id' as a users ID input...
 	RemoveUser(context.Context) bool
+	// DeleteAccount
+	DeleteAccount(context.Context) bool
+	ChangeUsername(context.Context) bool
 }

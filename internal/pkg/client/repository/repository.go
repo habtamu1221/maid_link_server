@@ -3,9 +3,9 @@ package clientRepo
 import (
 	"context"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/client"
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
-	"github.com/samuael/Project/MaidLink/pkg"
+	"github.com/habte/Project/MaidLink/internal/pkg/client"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/pkg"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -61,4 +61,15 @@ func (clientr *ClientRepo) UpdateMyMaids(conte context.Context) ([]string, error
 	} else {
 		return nil, er
 	}
+}
+
+// MyMaidsWhichIPayedFor "user_id" returns []*string
+func (clientr *ClientRepo) MyMaidsWhichIPayedForString(conte context.Context) ([]string, error) {
+	client := &model.Client{}
+	if oid, er := primitive.ObjectIDFromHex(conte.Value("user_id").(string)); er == nil {
+		if er = clientr.DB.Collection(model.SCLIENT).FindOne(conte, bson.D{{"_id", oid}}).Decode(client); er == nil {
+			return client.MyMaids, er
+		}
+	}
+	return nil, nil
 }

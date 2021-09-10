@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 
-	"github.com/samuael/Project/MaidLink/internal/pkg/model"
+	"github.com/habte/Project/MaidLink/internal/pkg/model"
 )
 
 type IClientRepository interface {
@@ -16,4 +16,7 @@ type IClientRepository interface {
 	// UpdateClient a method to update a client instance using only
 	// "client" *model.Client as a parameter
 	UpdateMyMaids(context.Context) ([]string, error)
+	// MyMaidsWhichIPayedFor "user_id" returns []*string
+	// NOT FINISHED YET
+	MyMaidsWhichIPayedForString(context.Context) ([]string, error)
 }
